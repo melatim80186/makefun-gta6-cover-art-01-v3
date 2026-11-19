@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VICE COVER — GTA 6 Cover Art Maker</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <h1>VICE <span>COVER</span></h1>
+    <p class="tagline">Photo-led poster collages · Vice City nights</p>
+  </header>
+
+  <div class="workspace">
+    <section class="controls" aria-label="Editor controls">
+      <div class="row captions">
+        <label>Title <input id="caption" type="text" maxlength="40" value="Sunset Heist" placeholder="Sunset Heist"></label>
+        <label>Subtitle <input id="subtitle" type="text" maxlength="60" value="Vice City Nights" placeholder="Vice City Nights"></label>
+      </div>
+
+      <div class="group">
+        <div class="group-label">Photo library — click to load into selected panel</div>
+        <div class="library" id="library">
+          <button type="button" class="thumb" data-photo="beach"><img src="./samples/beach.jpg" alt="Beach"><span>Beach</span></button>
+          <button type="button" class="thumb" data-photo="palms"><img src="./samples/palms.jpg" alt="Palms"><span>Palms</span></button>
+          <button type="button" class="thumb" data-photo="neon"><img src="./samples/neon.jpg" alt="Neon"><span>Neon</span></button>
+          <button type="button" class="thumb" data-photo="skyline"><img src="./samples/skyline.jpg" alt="Skyline"><span>Skyline</span></button>
+          <button type="button" class="thumb" data-photo="sunset"><img src="./samples/sunset.jpg" alt="Sunset"><span>Sunset</span></button>
+          <button type="button" class="thumb" data-photo="street"><img src="./samples/street.jpg" alt="Street"><span>Street</span></button>
+        </div>
+        <div class="dropzone" id="dropzone">
+          <span>Drop a photo here or</span>
+          <label class="file-btn">Choose file <input id="photo" type="file" accept="image/*"></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-label">Panels — click a slot to edit it</div>
+        <div class="panels" id="panels">
+          <button type="button" class="panel-slot selected" data-panel="0">1</button>
+          <button type="button" class="panel-slot" data-panel="1">2</button>
+          <button type="button" class="panel-slot" data-panel="2">3</button>
+          <button type="button" class="panel-slot" data-panel="3">4</button>
+          <button type="button" class="panel-slot" data-panel="4">5</button>
+        </div>
+        <label class="zoom-label">Zoom <input id="zoom" type="range" min="1" max="3" step="0.05" value="1"></label>
+        <p class="hint">Drag on the cover to pan the selected panel's photo.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-label">Layout</div>
+        <div class="picker" id="layouts">
+          <button type="button" data-layout="classic">Classic</button>
+          <button type="button" data-layout="split">Split</button>
+          <button type="button" data-layout="single">Single</button>
+          <button type="button" data-layout="quad">Quad</button>
+          <button type="button" data-layout="strip">Strip</button>
+          <button type="button" data-layout="hero-side">Hero Side</button>
+          <button type="button" data-layout="hero-top">Hero Top</button>
+          <button type="button" data-layout="mosaic">Mosaic</button>
+          <button type="button" data-layout="diagonal">Diagonal</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-label">Grade</div>
+        <div class="picker" id="grades">
+          <button type="button" data-grade="sunset">Sunset</button>
+          <button type="button" data-grade="neon">Neon</button>
+          <button type="button" data-grade="noir">Noir</button>
+          <button type="button" data-grade="pastel">Pastel</button>
+          <button type="button" data-grade="poster-ink">Poster Ink</button>
+          <button type="button" data-grade="skin-safe">Skin Safe</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-label">Title style</div>
+        <div class="picker" id="title-styles">
+          <button type="button" data-title-style="gradient">Gradient</button>
+          <button type="button" data-title-style="neon">Neon</button>
+          <button type="button" data-title-style="outline">Outline</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="surprise" type="button" class="surprise">✦ Surprise me</button>
+        <div class="exports">
+          <button id="export-1080" type="button">Export 1920×1080</button>
+          <button id="export-1350" type="button">Export 1080×1350</button>
+          <button id="export-1920" type="button">Export 1080×1080</button>
+        </div>
+        <p id="status" role="status">Ready.</p>
+      </div>
+    </section>
+
+    <section class="stage" aria-label="Cover preview">
+      <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
+    </section>
+  </div>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
