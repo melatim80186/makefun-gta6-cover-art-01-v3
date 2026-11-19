@@ -39,6 +39,24 @@ const state = {
   ],
 };
 
+// Keep the layout / grade / title-style picker buttons in sync with state,
+// so any path that changes state (picker click, Surprise me, ?shot= apply)
+// is reflected in the highlighted buttons.
+function syncPickerButtons() {
+  const groups = [
+    ['layouts', 'layout', 'layout'],
+    ['grades', 'grade', 'grade'],
+    ['title-styles', 'titleStyle', 'titleStyle'],
+  ];
+  groups.forEach(([containerId, attr, key]) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.querySelectorAll('button').forEach((b) => {
+      b.classList.toggle('active', b.dataset[attr] === state[key]);
+    });
+  });
+}
+
 function redraw() {
   drawCover(canvas, state.photos, {
     layout: state.layout,
@@ -48,6 +66,7 @@ function redraw() {
     titleStyle: state.titleStyle,
     crops: state.crops,
   });
+  syncPickerButtons();
 }
 
 function setStatus(text) {
@@ -150,8 +169,7 @@ function wirePicker(containerId, attr, key) {
     if (btn.dataset[attr] === state[key]) btn.classList.add('active');
     btn.addEventListener('click', () => {
       state[key] = btn.dataset[attr];
-      container.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
+      syncPickerButtons();
       redraw();
     });
   });
@@ -217,10 +235,7 @@ document.getElementById('surprise').addEventListener('click', async () => {
     state.crops[i] = { x: 0.5, y: 0.5, zoom: 1 };
   }
   zoomSlider.value = '1';
-  // Sync picker active states.
-  document.querySelectorAll('#layouts button').forEach((b) => b.classList.toggle('active', b.dataset.layout === state.layout));
-  document.querySelectorAll('#grades button').forEach((b) => b.classList.toggle('active', b.dataset.grade === state.grade));
-  document.querySelectorAll('#title-styles button').forEach((b) => b.classList.toggle('active', b.dataset.titleStyle === state.titleStyle));
+  syncPickerButtons();
   redraw();
   setStatus(`Surprise: ${state.title} — ${state.layout} / ${state.grade} / ${state.titleStyle}`);
 });

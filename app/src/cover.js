@@ -43,7 +43,7 @@ export const LAYOUTS = [
   { id: 'mosaic', name: 'Mosaic', panels: [
     { x: 0, y: 0, w: 0.3, h: 0.5 },
     { x: 0, y: 0.5, w: 0.3, h: 0.5 },
-    { x: 0.3, y: 0.2, w: 0.4, h: 0.6 },
+    { x: 0.3, y: 0, w: 0.4, h: 1 },
     { x: 0.7, y: 0, w: 0.3, h: 0.5 },
     { x: 0.7, y: 0.5, w: 0.3, h: 0.5 },
   ] },
