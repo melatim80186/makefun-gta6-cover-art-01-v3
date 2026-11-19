@@ -261,9 +261,17 @@ if (shot) {
     const { photo, caption, subtitle, layout, grade, titleStyle } = scene;
     if (photo) {
       try {
-        state.photos[0] = await loadImage(`./samples/${photo}.jpg`);
+        const img = await loadImage(`./samples/${photo}.jpg`);
+        // Shot scenes are photo-led collages: the same shot photo fills
+        // every panel, panned across it so it reads as one continuous
+        // image, not a repeated tile. Normal editor behaviour (user assigns
+        // photos per panel) is untouched — this is the ?shot= path only.
+        for (let i = 0; i < 5; i += 1) {
+          state.photos[i] = img;
+          state.crops[i] = { x: 0.15 + 0.17 * i, y: 0.5, zoom: 1.25 };
+        }
       } catch (err) {
-        state.photos[0] = null;
+        for (let i = 0; i < 5; i += 1) state.photos[i] = null;
       }
     }
     if (caption) { state.title = caption; captionInput.value = caption; }
