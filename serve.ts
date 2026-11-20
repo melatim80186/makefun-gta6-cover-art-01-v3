@@ -1,75 +1,54 @@
-// A tiny static server for app/ (Node 22, standard library only), so an entry can be tried
-// locally without a build step: `node serve.ts` serves app/ on http://localhost:8080.
-// It sends the MIME types an offline web app needs, refuses any path outside app/, and otherwise
-// does nothing clever: this is a development convenience, not a web server for the internet.
-import { createReadStream, statSync } from 'node:fs';
-import { createServer } from 'node:http';
-import { extname, join, normalize, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
+// Vice Cover — tiny static server for trying the app locally.
+// Serves app/ at http://localhost:8080 with Node's standard library
+// only: no dependencies, no network calls, nothing leaves the machine.
 
-const root = resolve(fileURLToPath(new URL('./app', import.meta.url)));
-const args = process.argv.slice(2);
-const portIndex = args.indexOf('--port');
-// `--port <n>` overrides the default 8080; anything out of range falls back to 8080.
-const requested = portIndex === -1 ? 8080 : Number(args[portIndex + 1]);
-const port = Number.isInteger(requested) && requested > 0 && requested < 65536 ? requested : 8080;
+import { createReadStream, existsSync, statSync } from "node:fs";
+import { createServer } from "node:http";
+import { dirname, extname, join, normalize, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const MIME: Record<string, string> = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.mjs': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.gif': 'image/gif',
-  '.webp': 'image/webp',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2',
-  '.woff': 'font/woff',
-  '.ttf': 'font/ttf',
-  '.otf': 'font/otf',
-  '.bin': 'application/octet-stream',
-  '.wasm': 'application/wasm',
-  '.wav': 'audio/wav',
-  '.mp3': 'audio/mpeg',
-  '.ogg': 'audio/ogg',
-  '.txt': 'text/plain; charset=utf-8',
+const APP_ROOT = join(dirname(fileURLToPath(import.meta.url)), "app");
+const PORT = Number(process.env.PORT || 8080);
+
+const MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".webp": "image/webp",
 };
 
-createServer((request, response) => {
-  const url = new URL(request.url ?? '/', 'http://localhost');
-  let pathname: string;
-  try {
-    pathname = decodeURIComponent(url.pathname);
-  } catch {
-    response.writeHead(400).end('bad request');
+// Resolve a request path inside app/ and refuse anything that climbs out.
+function safePath(urlPath) {
+  const decoded = decodeURIComponent(urlPath.split("?")[0]);
+  const cleaned = normalize(decoded).replace(/^(\.\.[/\\])+/, "");
+  const full = resolve(join(APP_ROOT, cleaned === "/" ? "index.html" : cleaned));
+  if (full !== APP_ROOT && !full.startsWith(APP_ROOT + sep)) return null;
+  return full;
+}
+
+const server = createServer((req, res) => {
+  console.log(req.method + " " + req.url);
+  const file = safePath(req.url || "/");
+  if (!file || !existsSync(file) || !statSync(file).isFile()) {
+    res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+    res.end("not found\n");
     return;
   }
-  if (pathname.endsWith('/')) pathname += 'index.html';
-  // Directory traversal guard: the resolved file must stay inside app/.
-  const file = resolve(join(root, normalize(pathname)));
-  if (file !== root && !file.startsWith(root + sep)) {
-    response.writeHead(403).end('forbidden');
-    return;
-  }
-  let size: number;
-  try {
-    const stats = statSync(file);
-    if (!stats.isFile()) throw new Error('not a file');
-    size = stats.size;
-  } catch {
-    response.writeHead(404).end('not found');
-    return;
-  }
-  response.writeHead(200, {
-    'content-type': MIME[extname(file).toLowerCase()] ?? 'application/octet-stream',
-    'content-length': size,
-    'cache-control': 'no-store',
-  });
-  createReadStream(file).pipe(response);
-}).listen(port, '127.0.0.1', () => {
-  console.log(`app/ is on http://localhost:${port}`);
+  res.writeHead(200, { "content-type": MIME[extname(file)] || "application/octet-stream" });
+  createReadStream(file).pipe(res);
 });
+
+server.listen(PORT, () => {
+  console.log("Vice Cover serving app/ at http://localhost:" + PORT);
+});
+
+// Shut down cleanly so the screenshot runner can stop the server it
+// started without leaving a listener behind.
+process.on("SIGINT", () => server.close(() => process.exit(0)));
+process.on("SIGTERM", () => server.close(() => process.exit(0)));

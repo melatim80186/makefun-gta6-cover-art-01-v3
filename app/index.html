@@ -1,108 +1,95 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="VICE COVER — turn your photos into GTA 6 poster-style cover art in the browser. 9 layouts, 6 grades, PNG export.">
-<title>VICE COVER — GTA 6 Cover Art Maker</title>
-<link rel="stylesheet" href="./style.css">
+<title>Vice Cover — GTA 6 Cover Art Maker</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="app">
-  <header class="topbar">
-    <h1>VICE <span>COVER</span></h1>
-    <p class="tagline">Photo-led poster collages · Vice City nights</p>
-  </header>
+<header class="topbar">
+  <div class="brand">VICE <span>COVER</span></div>
+  <p class="tagline">Photo-led poster collages · Vice City nights</p>
+  <p class="fanmade">Fan-made tool · not affiliated with Rockstar Games</p>
+</header>
 
-  <div class="workspace">
-    <section class="controls" aria-label="Editor controls">
-      <div class="row captions">
-        <label>Title <input id="caption" type="text" maxlength="40" value="Sunset Heist" placeholder="Sunset Heist"></label>
-        <label>Subtitle <input id="subtitle" type="text" maxlength="60" value="Vice City Nights" placeholder="Vice City Nights"></label>
-      </div>
-
-      <div class="group">
-        <div class="group-label">Photo library — click to load into selected panel</div>
-        <div class="library" id="library">
-          <button type="button" class="thumb" data-photo="beach"><img src="./samples/beach.jpg" alt="Beach"><span>Beach</span></button>
-          <button type="button" class="thumb" data-photo="palms"><img src="./samples/palms.jpg" alt="Palms"><span>Palms</span></button>
-          <button type="button" class="thumb" data-photo="neon"><img src="./samples/neon.jpg" alt="Neon"><span>Neon</span></button>
-          <button type="button" class="thumb" data-photo="skyline"><img src="./samples/skyline.jpg" alt="Skyline"><span>Skyline</span></button>
-          <button type="button" class="thumb" data-photo="sunset"><img src="./samples/sunset.jpg" alt="Sunset"><span>Sunset</span></button>
-          <button type="button" class="thumb" data-photo="street"><img src="./samples/street.jpg" alt="Street"><span>Street</span></button>
-        </div>
-        <div class="dropzone" id="dropzone">
-          <span>Drop a photo here or</span>
-          <label class="file-btn">Choose file <input id="photo" type="file" accept="image/*"></label>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-label">Panels — click a slot to edit it</div>
-        <div class="panels" id="panels">
-          <button type="button" class="panel-slot selected" data-panel="0">1</button>
-          <button type="button" class="panel-slot" data-panel="1">2</button>
-          <button type="button" class="panel-slot" data-panel="2">3</button>
-          <button type="button" class="panel-slot" data-panel="3">4</button>
-          <button type="button" class="panel-slot" data-panel="4">5</button>
-        </div>
-        <label class="zoom-label">Zoom <input id="zoom" type="range" min="1" max="3" step="0.05" value="1"></label>
-        <p class="hint">Drag on the cover to pan the selected panel's photo.</p>
-      </div>
-
-      <div class="group">
-        <div class="group-label">Layout</div>
-        <div class="picker" id="layouts">
-          <button type="button" data-layout="classic">Classic</button>
-          <button type="button" data-layout="split">Split</button>
-          <button type="button" data-layout="single">Single</button>
-          <button type="button" data-layout="quad">Quad</button>
-          <button type="button" data-layout="strip">Strip</button>
-          <button type="button" data-layout="hero-side">Hero Side</button>
-          <button type="button" data-layout="hero-top">Hero Top</button>
-          <button type="button" data-layout="mosaic">Mosaic</button>
-          <button type="button" data-layout="diagonal">Diagonal</button>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-label">Grade</div>
-        <div class="picker" id="grades">
-          <button type="button" data-grade="sunset">Sunset</button>
-          <button type="button" data-grade="neon">Neon</button>
-          <button type="button" data-grade="noir">Noir</button>
-          <button type="button" data-grade="pastel">Pastel</button>
-          <button type="button" data-grade="poster-ink">Poster Ink</button>
-          <button type="button" data-grade="skin-safe">Skin Safe</button>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-label">Title style</div>
-        <div class="picker" id="title-styles">
-          <button type="button" data-title-style="gradient">Gradient</button>
-          <button type="button" data-title-style="neon">Neon</button>
-          <button type="button" data-title-style="outline">Outline</button>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button id="surprise" type="button" class="surprise">✦ Surprise me</button>
-        <div class="exports">
-          <!-- NOTE: the ids name the button's export slot; the visible label names the size it renders. Keep the pairing in sync with main.js (export-1080 → 1920×1080, export-1350 → 1080×1350, export-1920 → 1080×1080). -->
-          <button id="export-1080" type="button">Export 1920×1080</button>
-          <button id="export-1350" type="button">Export 1080×1350</button>
-          <button id="export-1920" type="button">Export 1080×1080</button>
-        </div>
-        <p id="status" role="status">Ready.</p>
-      </div>
+<main class="shell">
+  <aside class="controls" id="controls">
+    <section class="group">
+      <h2>Words</h2>
+      <label class="field">Title
+        <input id="titleInput" type="text" value="SUNSET HEIST" maxlength="24" autocomplete="off">
+      </label>
+      <label class="field">Subtitle
+        <input id="subtitleInput" type="text" value="Vice City Nights" maxlength="40" autocomplete="off">
+      </label>
+      <label class="field">Caption
+        <input id="captionInput" type="text" placeholder="Add a caption…" maxlength="60" autocomplete="off">
+      </label>
     </section>
 
-    <section class="stage" aria-label="Cover preview">
-      <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
+    <section class="group">
+      <h2>Photo library — click to load into the selected panel</h2>
+      <div class="samples" id="sampleRow"></div>
+      <div class="dropzone" id="dropzone">
+        Drop a photo here or
+        <label class="filebtn" for="fileInput">Choose file</label>
+        <input id="fileInput" type="file" accept="image/*" hidden>
+      </div>
+      <button class="wide" id="fillAllBtn" type="button">Fill every panel with the selected photo</button>
     </section>
-  </div>
+
+    <section class="group">
+      <h2>Panels — click a slot to edit it</h2>
+      <div class="row" id="panelRow"></div>
+      <label class="field">Zoom
+        <input id="zoomRange" type="range" min="1" max="3" step="0.01" value="1.15">
+      </label>
+      <p class="hint">Drag on the cover to pan the selected panel's photo.</p>
+    </section>
+
+    <section class="group">
+      <h2>Layout</h2>
+      <div class="chips" id="layoutRow"></div>
+    </section>
+
+    <section class="group">
+      <h2>Grade</h2>
+      <div class="chips" id="gradeRow"></div>
+      <button class="chip toggle" id="inkToggle" type="button" aria-pressed="false">Poster Ink</button>
+    </section>
+
+    <section class="group">
+      <h2>Title style</h2>
+      <div class="chips" id="titleStyleRow"></div>
+    </section>
+
+    <section class="group">
+      <h2>Preview size</h2>
+      <div class="chips" id="sizeRow"></div>
+    </section>
+
+    <section class="group">
+      <h2>Export PNG</h2>
+      <div class="chips" id="exportRow"></div>
+      <button class="wide surprise" id="surpriseBtn" type="button">✦ Surprise me</button>
+      <button class="wide ghost" id="selfTestBtn" type="button">Run self-test (all 9 layouts)</button>
+      <p class="status" id="status">Loading photos…</p>
+    </section>
+  </aside>
+
+  <section class="stage">
+    <canvas id="stage" width="960" height="540" role="img" aria-label="Live cover preview"></canvas>
+    <p class="hint">Live preview — what you see is what the PNG gets.</p>
+  </section>
 </main>
+
+<footer class="foot">
+  Vice Cover is a fan-made tool. Not affiliated with Rockstar Games.
+  Photos stay on your machine; nothing is uploaded.
+</footer>
+
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>

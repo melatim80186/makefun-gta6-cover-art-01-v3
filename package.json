@@ -1,0 +1,1 @@
+{"description":"Vice Cover — GTA 6 Cover Art Maker, a make.fun entry for gta6-cover-art-01","name":"vice-cover","private":true,"scripts":{"dossier":"mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts","shots":"node app/src/shots.js","start":"node serve.ts"},"type":"module"}
