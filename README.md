@@ -4,7 +4,7 @@
 [![Rank](https://make.fun/badge/gta6-cover-art-01/melatim80186/makefun-gta6-cover-art-01-v3/rank.svg)](https://make.fun/bounty/gta6-cover-art-01)
 [![Reward](https://make.fun/badge/gta6-cover-art-01/melatim80186/makefun-gta6-cover-art-01-v3/reward.svg)](https://make.fun/bounty/gta6-cover-art-01)
 
-VICE COVER turns your photos and a caption into GTA 6 poster-style cover art, right in the browser — no uploads, no network, everything runs offline.
+VICE COVER turns your photos and a caption into GTA 6 poster-style cover art, right in the browser — no uploads, no network, everything runs offline. Pick a layout, a grade, and a title style, then export a print-ready PNG.
 
 ## Features
 
@@ -29,6 +29,8 @@ Then open http://localhost:8080 in your browser.
 ```sh
 MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
+
+This copies `app/` and `screenshots/` into the output directory and writes `dossier.json` there via the vendored make.fun library (`vendor/makefun-app.ts`). The dossier is what the scorer reads, so keep `main.ts` and the vendored library in sync.
 
 ## Photo credits
 

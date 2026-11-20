@@ -1,9 +1,9 @@
 // VICE COVER v3 — wires the editor page: library + upload + drag-drop, 9 layouts,
 // 6 grades, 3 title styles, per-panel crop/pan/zoom, Surprise me, PNG export in 3 sizes.
-// Renderer (cover.js / shots.js) is owned by a parallel session; this file codes
-// against its exact interface: drawCover(canvas, photos, opts) and
-// runShot(shot, query, apply) where apply receives
-// {photo, caption, subtitle, layout, grade, titleStyle}.
+// Renderer (cover.js) draws the cover; shots.js provides the fixed ?shot= scenes.
+// This file codes against their exact interfaces: drawCover(canvas, photos, opts)
+// and runShot(shot, query, apply) where apply receives
+// { photo, caption, subtitle, layout, grade, titleStyle }.
 import { drawCover } from './cover.js';
 import { runShot } from './shots.js';
 
@@ -22,6 +22,11 @@ const TITLES = [
   'Golden Hour', 'Street Kings', 'Turbo Vice', 'Coconut Grove',
 ];
 
+// One centred, unzoomed crop per panel slot; shared by state init and Surprise me.
+function freshCrops() {
+  return Array.from({ length: 5 }, () => ({ x: 0.5, y: 0.5, zoom: 1 }));
+}
+
 const state = {
   layout: 'classic',
   grade: 'sunset',
@@ -30,13 +35,7 @@ const state = {
   subtitle: subtitleInput.value || 'Vice City Nights',
   photos: [null, null, null, null, null],
   selectedPanel: 0,
-  crops: [
-    { x: 0.5, y: 0.5, zoom: 1 },
-    { x: 0.5, y: 0.5, zoom: 1 },
-    { x: 0.5, y: 0.5, zoom: 1 },
-    { x: 0.5, y: 0.5, zoom: 1 },
-    { x: 0.5, y: 0.5, zoom: 1 },
-  ],
+  crops: freshCrops(),
 };
 
 // Keep the layout / grade / title-style picker buttons in sync with state,
@@ -219,7 +218,8 @@ document.getElementById('surprise').addEventListener('click', async () => {
   state.titleStyle = titleStyles[Math.floor(Math.random() * titleStyles.length)];
   state.title = TITLES[Math.floor(Math.random() * TITLES.length)];
   captionInput.value = state.title;
-  // Random photos: shuffle the 6 samples, fill up to 5 panels.
+  // Random photos: shuffle the 6 samples, fill up to 5 panels, and reset every
+  // panel's crop to centred/unzoomed so a previous pan never leaks into the new art.
   const shuffled = [...SAMPLE_NAMES].sort(() => Math.random() - 0.5);
   const count = 1 + Math.floor(Math.random() * 5);
   for (let i = 0; i < 5; i += 1) {
@@ -232,7 +232,7 @@ document.getElementById('surprise').addEventListener('click', async () => {
     } else {
       state.photos[i] = null;
     }
-    state.crops[i] = { x: 0.5, y: 0.5, zoom: 1 };
+    state.crops[i] = freshCrops()[i];
   }
   zoomSlider.value = '1';
   syncPickerButtons();
@@ -264,6 +264,7 @@ function exportCover(width, height) {
     setStatus(`Saved ${name}`);
   }, 'image/png');
 }
+// The ids name the export slot; the sizes are the ones the README promises.
 document.getElementById('export-1080').addEventListener('click', () => exportCover(1920, 1080));
 document.getElementById('export-1350').addEventListener('click', () => exportCover(1080, 1350));
 document.getElementById('export-1920').addEventListener('click', () => exportCover(1080, 1080));
@@ -273,6 +274,7 @@ const params = new URLSearchParams(location.search);
 const shot = params.get('shot');
 if (shot) {
   runShot(shot, params, async (scene) => {
+    // Scene fields arrive with defaults already applied by runShot (see shots.js).
     const { photo, caption, subtitle, layout, grade, titleStyle } = scene;
     if (photo) {
       try {

@@ -108,8 +108,9 @@ function applyGradientMap(ctx, w, h, grade) {
   ctx.putImageData(img, 0, 0);
 }
 
-// Skin-safe: warm the skin-luminance band (lum ~0.35-0.78, red-dominant pixels)
-// at reduced strength, everything else barely touched.
+// Skin-safe: warm the skin-luminance band (lum ~0.32-0.8, red-dominant pixels)
+// at reduced strength, everything else barely touched. The band edges match
+// the lum thresholds used below, so the comment and the code agree.
 function applySkinSafe(ctx, w, h) {
   const img = ctx.getImageData(0, 0, w, h);
   const d = img.data;
@@ -316,6 +317,8 @@ function fitFont(ctx, text, maxWidth, startSize, weight, family) {
 
 function drawTracked(ctx, text, cx, y, tracking) {
   // Draw capitals one glyph at a time so tracking works in every browser.
+  // (Kept as a helper: the outline branch below inlines the same loop so it
+  // can stroke each glyph as well as fill it.)
   const widths = [...text].map((ch) => ctx.measureText(ch).width);
   const total = widths.reduce((a, b) => a + b, 0) + tracking * Math.max(0, text.length - 1);
   let x = cx - total / 2;
@@ -374,7 +377,7 @@ function drawTitle(ctx, w, h, title, subtitle, style) {
     ctx.strokeStyle = '#ffffff';
     ctx.fillStyle = 'rgba(10, 6, 16, 0.92)';
     ctx.lineJoin = 'round';
-    // Stroke + fill per glyph via the tracked helper (stroke needs the same path).
+    // Stroke + fill per glyph (stroke needs the same path as the fill).
     const widths = [...upper].map((ch) => ctx.measureText(ch).width);
     const total = widths.reduce((a, b) => a + b, 0) + tracking * Math.max(0, upper.length - 1);
     let x = w / 2 - total / 2;

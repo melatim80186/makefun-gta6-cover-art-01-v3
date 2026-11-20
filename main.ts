@@ -10,17 +10,18 @@ import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-app.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
+const repoRoot = here;
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
 mkdirSync(out, { recursive: true });
-cpSync(join(here, 'app'), join(out, 'app'), { recursive: true });
+cpSync(join(repoRoot, 'app'), join(out, 'app'), { recursive: true });
 mkdirSync(join(out, 'screenshots'), { recursive: true });
-if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
+if (existsSync(join(repoRoot, 'screenshots'))) cpSync(join(repoRoot, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 
-// The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
-// scorer would refuse (more than 4 screenshots or one over 256 KiB; more than 993 files in app/ or 48 MiB of app
-// files, in all, or a path under app/ over 1000 bytes: app/ counts beside /output's own 1000-entry cap, its
-// screenshots/ and dossier.json).
+// The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry
+// the scorer would refuse. The counts matter: more than 4 screenshots or one over 256 KiB; more than 993 files
+// in app/ or 48 MiB of app files, in all, or a path under app/ over 1000 bytes — app/ counts beside /output's
+// own 1000-entry cap, alongside its screenshots/ and dossier.json.
 writeFileSync(
   join(out, 'dossier.json'),
   buildDossier(out, {

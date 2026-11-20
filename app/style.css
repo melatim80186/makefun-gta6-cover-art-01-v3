@@ -1,3 +1,7 @@
+/* VICE COVER editor chrome: dark violet panels, hot-pink accents, gold highlights.
+   The layout is a fixed-height column: top bar, then controls beside the stage.
+   Screenshot mode (body.shot-cover, bottom of file) hides the chrome so the
+   cover canvas fills the whole frame. */
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; }
 body {
@@ -82,6 +86,8 @@ input[type=text]:focus { outline: 2px solid #ff2e88; outline-offset: 0; border-c
   background: #000; cursor: grab; touch-action: none;
 }
 #cover:active { cursor: grabbing; }
+/* Screenshot mode (?shot=cover): hide the editor chrome so the cover fills the frame. */
+/* Screenshot mode (?shot=cover): hide the editor chrome so the cover fills the frame. */
 body.shot-cover .topbar, body.shot-cover .controls { display: none; }
 body.shot-cover .app { padding: 0; }
 body.shot-cover .workspace { gap: 0; }

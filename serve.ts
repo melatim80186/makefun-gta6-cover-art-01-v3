@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('./app', import.meta.url)));
 const args = process.argv.slice(2);
 const portIndex = args.indexOf('--port');
+// `--port <n>` overrides the default 8080; anything out of range falls back to 8080.
 const requested = portIndex === -1 ? 8080 : Number(args[portIndex + 1]);
 const port = Number.isInteger(requested) && requested > 0 && requested < 65536 ? requested : 8080;
 
@@ -48,6 +49,7 @@ createServer((request, response) => {
     return;
   }
   if (pathname.endsWith('/')) pathname += 'index.html';
+  // Directory traversal guard: the resolved file must stay inside app/.
   const file = resolve(join(root, normalize(pathname)));
   if (file !== root && !file.startsWith(root + sep)) {
     response.writeHead(403).end('forbidden');
